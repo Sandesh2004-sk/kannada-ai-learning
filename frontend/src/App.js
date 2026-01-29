@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import WritingCanvas from "./components/WritingCanvas";
 
 const letters = [
@@ -12,15 +12,12 @@ const letters = [
 function App() {
   const [index, setIndex] = useState(0);
 
-  const speakLetter = (text) => {
-    const utterance = new SpeechSynthesisUtterance(text);
+  const speakLetter = () => {
+    const utterance = new SpeechSynthesisUtterance(letters[index].sound);
     utterance.lang = "kn-IN";
+    window.speechSynthesis.cancel(); // stop previous
     window.speechSynthesis.speak(utterance);
   };
-
-  useEffect(() => {
-    speakLetter(letters[index].sound);
-  }, [index]);
 
   const nextLetter = () => {
     setIndex((prev) => (prev + 1) % letters.length);
@@ -33,7 +30,10 @@ function App() {
       <h2>Write this letter:</h2>
       <h1 style={{ fontSize: "64px" }}>{letters[index].char}</h1>
 
-      <button onClick={nextLetter}>Next Letter</button>
+      <button onClick={speakLetter}>🔊 Play Sound</button>
+      <button onClick={nextLetter} style={{ marginLeft: "10px" }}>
+        Next Letter
+      </button>
 
       <br /><br />
 
