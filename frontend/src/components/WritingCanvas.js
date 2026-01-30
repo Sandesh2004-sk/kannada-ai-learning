@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
 
-function WritingCanvas() {
+function WritingCanvas({ onSubmit }) {
   const canvasRef = useRef(null);
   const [isDrawing, setIsDrawing] = useState(false);
 
   const startDrawing = (e) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
+    const ctx = canvasRef.current.getContext("2d");
     ctx.beginPath();
     ctx.moveTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     setIsDrawing(true);
@@ -14,14 +13,10 @@ function WritingCanvas() {
 
   const draw = (e) => {
     if (!isDrawing) return;
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext("2d");
-
+    const ctx = canvasRef.current.getContext("2d");
     ctx.lineWidth = 4;
     ctx.lineCap = "round";
     ctx.strokeStyle = "black";
-
     ctx.lineTo(e.nativeEvent.offsetX, e.nativeEvent.offsetY);
     ctx.stroke();
   };
@@ -34,6 +29,13 @@ function WritingCanvas() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+  };
+
+  const submitDrawing = () => {
+    const canvas = canvasRef.current;
+    canvas.toBlob((blob) => {
+      onSubmit(blob);
+    });
   };
 
   return (
@@ -50,8 +52,10 @@ function WritingCanvas() {
       />
 
       <br />
-      <button onClick={clearCanvas} style={{ marginTop: "10px" }}>
-        Clear
+
+      <button onClick={clearCanvas}>Clear</button>
+      <button onClick={submitDrawing} style={{ marginLeft: "10px" }}>
+        Submit
       </button>
     </div>
   );
